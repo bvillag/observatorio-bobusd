@@ -1,0 +1,40 @@
+name: Datos BCB (TCO)
+
+on:
+  schedule:
+    # 23:50 hora de Bolivia (UTC-4) = 03:50 UTC. El BCB publica ~23:30 y suele atrasarse.
+    - cron: "50 3 * * *"
+    # Reintento 09:00 hora de Bolivia por si el BCB publico tarde.
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos-bcb
+  cancel-in-progress: false
+
+jobs:
+  descargar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar fechas nuevas y reconstruir tablas
+        run: python3 scripts/fetch_bcb.py --out bcb
+
+      - name: Guardar en el repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bcb
+          if git diff --cached --quiet; then echo "Sin datos nuevos."; exit 0; fi
+          git commit -q -m "bcb: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          # el VPS tambien sube datos cada 10 min: rebase y reintento si choca
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase && git push -q && exit 0
+            sleep $((i * 10))
+          done
+          exit 1
