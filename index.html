@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observatorio BOB/USD</title>
+<meta name="description" content="Precio del dólar en Bolivia en tiempo casi real: mercado P2P, tipo de cambio oficial del BCB y los spreads entre ellos. Datos abiertos y método publicado.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23101714'/><path d='M7 21 L13 14 L18 18 L25 9' stroke='%2368BF8F' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<script>try{const t=localStorage.getItem('obs-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#"><span class="dot"></span>Observatorio BOB/USD</a>
+    <nav class="nav">
+      <a href="#ahora">Ahora</a><a href="#spreads">Spreads</a><a href="#monto">Monto</a><a href="#liquidez">Liquidez</a><a href="#dinamica">Dinámica</a><a href="#bancos">Bancos</a><a href="#metodo">Método</a>
+    </nav>
+    <button class="theme" id="theme" aria-label="Cambiar tema">Claro</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow"><span class="line"></span>Datos abiertos · se actualiza cada 10 minutos</p>
+    <h1>Un solo precio del dólar, <span class="acc">visible para todos.</span></h1>
+    <p class="lede">El boliviano flota desde el 29 de junio de 2026, pero el precio del dólar cambia según dónde se compre: bancos, mercado P2P o casas de cambio. Esta página mide esas diferencias minuto a minuto para que cualquiera pueda verlas.</p>
+    <p class="status" id="status"><span class="pulse"></span><span id="status-text">Cargando datos…</span></p>
+  </section>
+
+  <!-- 1. Ahora -->
+  <section id="ahora" class="sec">
+    <div class="sec-head"><span class="num">01</span><h2>El precio ahora</h2></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <!-- 2. Precio en el tiempo -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">02</span><h2>El precio en el tiempo</h2>
+      <div class="seg" id="range"><button data-r="1">24 h</button><button data-r="7" class="on">7 días</button><button data-r="0">Todo</button></div>
+    </div>
+    <div class="card"><p class="cap">Mid P2P (Binance, BOB por USDT, promedio de 10 min) con la banda de compra y venta para 1.000 USDT, frente al TCO vigente.</p><div class="chart" id="c-price"></div></div>
+    <div class="card"><p class="cap">Tipo de cambio oficial (TCO) desde el inicio de la flotación, por fecha de corte.</p><div class="chart short" id="c-tco"></div></div>
+  </section>
+
+  <!-- 3. Spreads -->
+  <section id="spreads" class="sec">
+    <div class="sec-head"><span class="num">03</span><h2>Spread entre mercados</h2><span class="badge" id="b-prelim-basis" hidden>Preliminar</span></div>
+    <p class="intro">La base es la diferencia entre el dólar P2P y el oficial: <code>mid P2P ÷ TCO − 1</code>. Si los arbitrajistas pueden mover dinero entre ambos mercados, la base debería quedarse en una banda estrecha y volver rápido cuando se sale. Medimos qué tan rápido.</p>
+    <div class="tiles small" id="tiles-basis"></div>
+    <div class="grid2">
+      <div class="card"><p class="cap">Base P2P − TCO (%), cada 10 min. La franja es la banda de no arbitraje estimada.</p><div class="chart" id="c-basis"></div></div>
+      <div class="card"><p class="cap">Distribución de la base (% del tiempo).</p><div class="chart" id="c-hist"></div></div>
+    </div>
+  </section>
+
+  <!-- 4. Monto -->
+  <section id="monto" class="sec">
+    <div class="sec-head"><span class="num">04</span><h2>Costo según el monto</h2></div>
+    <p class="intro">Un mercado eficiente cobra casi lo mismo a quien cambia 100 que a quien cambia 100.000. Aquí, el costo de ejecutar cada monto contra el libro P2P y el descuento que reciben las operaciones bancarias según su tamaño.</p>
+    <div class="grid2">
+      <div class="card"><p class="cap">P2P: costo frente al mid por monto (%, mediana de las últimas 24 h).</p><div class="chart" id="c-size"></div></div>
+      <div class="card"><p class="cap">Bancos: precio pagado frente al TCO según el tamaño de la operación (%, toda la muestra BCB).</p><div class="chart" id="c-tickets"></div></div>
+    </div>
+  </section>
+
+  <!-- 5. Liquidez -->
+  <section id="liquidez" class="sec">
+    <div class="sec-head"><span class="num">05</span><h2>Liquidez y fricciones</h2></div>
+    <div class="tiles small" id="tiles-liq"></div>
+    <div class="grid2">
+      <div class="card"><p class="cap">USDT disponibles en anuncios P2P por lado (promedio de 10 min).</p><div class="chart" id="c-depth"></div></div>
+      <div class="card"><p class="cap">Spread mediano compra-venta (%) por hora y día, hora de Bolivia.</p><div class="chart" id="c-heat"></div></div>
+    </div>
+  </section>
+
+  <!-- 6. Dinámica -->
+  <section id="dinamica" class="sec">
+    <div class="sec-head"><span class="num">06</span><h2>Dinámica y estadística</h2><span class="badge" id="b-prelim-dyn" hidden>Preliminar</span></div>
+    <p class="intro">¿Se comporta el precio como un paseo aleatorio, como en un mercado líquido, o tiene inercia? La razón de varianzas de Lo y MacKinlay compara la varianza de los retornos largos con la suma de los cortos: 1 es paseo aleatorio, más de 1 indica tendencia.</p>
+    <div class="tiles small" id="tiles-dyn"></div>
+    <div class="grid2">
+      <div class="card"><p class="cap">Volatilidad realizada diaria del P2P (%), con retornos de 10 min.</p><div class="chart short" id="c-rv"></div></div>
+      <div class="card"><p class="cap">Autocorrelación de los retornos de 10 min (rezagos 1 a 12). Las líneas marcan ±2/√n.</p><div class="chart short" id="c-acf"></div></div>
+    </div>
+    <p class="note">Con más semanas de datos se agregan la participación en la información de Hasbrouck (qué mercado descubre el precio primero) y un precio eficiente estimado con filtro de Kalman.</p>
+  </section>
+
+  <!-- 7. Bancos -->
+  <section id="bancos" class="sec">
+    <div class="sec-head"><span class="num">07</span><h2>Mercado bancario (BCB)</h2></div>
+    <div class="tiles small" id="tiles-banks"></div>
+    <div class="grid2">
+      <div class="card"><p class="cap">Dispersión de precios dentro del día: percentiles 10 y 90 de las compras bancarias frente al TCO (%).</p><div class="chart" id="c-disp"></div></div>
+      <div class="card"><p class="cap">Participación en las compras de dólares, toda la muestra (%).</p><div class="chart" id="c-share"></div></div>
+    </div>
+    <div class="card"><p class="cap">Concentración diaria: índice Herfindahl-Hirschman (0 = competencia perfecta, 1 = un solo banco).</p><div class="chart short" id="c-hhi"></div></div>
+  </section>
+
+  <!-- 8. Método -->
+  <section id="metodo" class="sec">
+    <div class="sec-head"><span class="num">08</span><h2>Método y datos</h2></div>
+    <div class="method">
+      <div>
+        <h3>Fuentes</h3>
+        <ul>
+          <li><b>P2P:</b> libro completo de anuncios BOB/USDT de Binance P2P, ambos lados, cada minuto desde el 2 de octubre de 2026 (recolector propio).</li>
+          <li><b>TCO y compras bancarias:</b> archivos diarios del Banco Central de Bolivia, vía el repositorio público <a href="https://github.com/acamperob/bcb-tco">acamperob/bcb-tco</a>.</li>
+          <li><b>Próximamente:</b> otras plataformas P2P y casas de cambio.</li>
+        </ul>
+        <h3>Definiciones</h3>
+        <ul>
+          <li><b>Mid P2P:</b> promedio entre el precio para comprar y para vender 1.000 USDT, respetando los montos mínimos y máximos de cada anuncio.</li>
+          <li><b>TCO vigente:</b> el que rige ese día según la fecha de vigencia del BCB (RD 88/2026: promedio ponderado; RD 142/2026: mediana ponderada).</li>
+          <li><b>Banda de no arbitraje:</b> autorregresión con umbral (Balke y Fomby, 1997). Dentro de la banda la base no se corrige; fuera, sí. El umbral se elige por mínimos cuadrados.</li>
+          <li><b>Vida media:</b> <code>ln(0,5) / ln(φ)</code> de un AR(1) sobre la base.</li>
+          <li><b>Razón de varianzas:</b> Lo y MacKinlay (1988), con z robusto a heterocedasticidad.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Descargas</h3>
+        <ul id="downloads"><li><a href="data/obs.json">obs.json</a> (todo lo que dibuja la página)</li><li><a href="data/csv/tco.csv">tco.csv</a></li></ul>
+        <h3>Código</h3>
+        <p>El recolector, el exportador y esta página son abiertos: <a href="https://github.com/bvillag/observatorio-bobusd">github.com/bvillag/observatorio-bobusd</a>.</p>
+        <h3>Limitaciones</h3>
+        <p>USDT se toma como 1 USD. El P2P no es un mercado oficial y sus anuncios pueden no ejecutarse al precio publicado. Las estadísticas con pocas semanas de datos se marcan como preliminares.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="wrap">Bruno Villagomez Caro · Proyecto BOB/USD · <span id="gen"></span></div></footer>
+
+<script src="assets/echarts.min.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
