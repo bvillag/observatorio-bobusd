@@ -20,6 +20,7 @@ Convenciones
 from __future__ import annotations
 
 import argparse
+from zoneinfo import ZoneInfo
 import json
 import math
 import sqlite3
@@ -79,7 +80,9 @@ def tco_daily(tot: pd.DataFrame) -> pd.Series:
             rows.append((d.date(), x.tco))
     s = pd.Series(dict(rows)).sort_index()
     # rellena huecos (feriados no cubiertos) con el ultimo valor conocido
-    full = pd.date_range(min(s.index), max(s.index), freq="D").date
+    # y extiende hasta hoy (hora de Bolivia): si el BCB publica tarde, se usa el ultimo TCO conocido
+    hoy = datetime.now(timezone.utc).astimezone(ZoneInfo("America/La_Paz")).date()
+    full = pd.date_range(min(s.index), max(max(s.index), hoy), freq="D").date
     return s.reindex(full).ffill()
 
 

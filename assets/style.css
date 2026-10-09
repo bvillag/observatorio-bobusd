@@ -66,5 +66,17 @@ h3{font-size:14px;font-weight:600;margin:18px 0 6px;color:var(--text)}
 .method ul{padding-left:18px;margin:0}.method li{margin:4px 0}.method b{color:var(--text);font-weight:500}
 .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-3);font:400 13px var(--mono);text-align:center;padding:20px}
 .foot{border-top:1px solid var(--border);margin-top:56px;padding:22px 0 40px;color:var(--text-3);font:400 12.5px var(--mono)}
+.q{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:4px;border:1px solid var(--border-2);border-radius:50%;font:500 10px var(--sans);color:var(--text-3);cursor:help;position:relative;vertical-align:1px}
+.q:hover,.q:focus{color:var(--text);border-color:var(--acc);outline:none}
+.q:hover::after,.q:focus::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(260px,80vw);background:var(--surface-2);color:var(--text);border:1px solid var(--border-2);border-radius:8px;padding:8px 10px;font:400 12.5px/1.45 var(--sans);white-space:normal;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.tile{position:relative}.tiles .tile:first-child .q:hover::after,.tiles .tile:first-child .q:focus::after{left:0;transform:none}
+.tiles .tile:last-child .q:hover::after,.tiles .tile:last-child .q:focus::after{left:auto;right:0;transform:none}
+.howto{margin:2px 0 10px;font-size:13px;color:var(--text-2)}
+.howto summary{cursor:pointer;color:var(--acc);font:500 12.5px var(--sans);list-style:none;display:inline-flex;align-items:center;gap:6px}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::before{content:"+";font-family:var(--mono)}
+.howto[open] summary::before{content:"−"}
+.howto p{margin:6px 0 4px;max-width:78ch}
+.gloss{margin-top:12px;row-gap:0}.gloss>h3{grid-column:1/-1;margin-bottom:0}.gloss dl{margin:0}.gloss dt{color:var(--text);font-weight:500;margin-top:10px}.gloss dd{margin:2px 0 0}
 @media (max-width:920px){.tiles{grid-template-columns:repeat(2,1fr)}.tiles.small{grid-template-columns:repeat(2,1fr)}.grid2,.method{grid-template-columns:1fr}.nav{display:none}.theme{margin-left:auto}}
 @media (max-width:480px){.wrap{padding:0 16px}.hero{padding-top:44px}.tile .v{font-size:22px}.chart{height:280px}.seg{margin-left:0}}

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Observatorio BOB/USD</title>
-<meta name="description" content="Precio del dólar en Bolivia en tiempo casi real: mercado P2P, tipo de cambio oficial del BCB y los spreads entre ellos. Datos abiertos y método publicado.">
+<title>Cotización BOB/USD</title>
+<meta name="description" content="Precio del dólar en Bolivia en tiempo casi real: mercado P2P del USDT, tipo de cambio oficial del BCB y la diferencia entre ellos. Datos abiertos y método publicado.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,8 +25,8 @@
 
 <main class="wrap">
   <section class="hero">
-    <p class="eyebrow"><span class="line"></span>Datos abiertos · se actualiza cada 10 minutos</p>
-    <h1>Un solo precio del dólar, <span class="acc">visible para todos.</span></h1>
+    <p class="eyebrow"><span class="line"></span>Datos abiertos · actualización cada 10 minutos</p>
+    <h1>El precio del dólar, <span class="acc">visible para todos.</span></h1>
     <p class="lede">El boliviano flota desde el 29 de junio de 2026, pero el precio del dólar cambia según dónde se compre: bancos, mercado P2P o casas de cambio. Esta página mide esas diferencias minuto a minuto para que cualquiera pueda verlas.</p>
     <p class="status" id="status"><span class="pulse"></span><span id="status-text">Cargando datos…</span></p>
   </section>
@@ -42,7 +42,8 @@
     <div class="sec-head"><span class="num">02</span><h2>El precio en el tiempo</h2>
       <div class="seg" id="range"><button data-r="1">24 h</button><button data-r="7" class="on">7 días</button><button data-r="0">Todo</button></div>
     </div>
-    <div class="card"><p class="cap">Mid P2P (Binance, BOB por USDT, promedio de 10 min) con la banda de compra y venta para 1.000 USDT, frente al TCO vigente.</p><div class="chart" id="c-price"></div></div>
+    <div class="card"><p class="cap">Mid P2P (Binance, BOB por USDT, promedio de 10 min) con la banda de compra y venta para 1.000 USDT, frente al TCO vigente.</p><div class="chart" id="c-price"></div>
+      <details class="howto"><summary>Cómo leer</summary><p>La línea central es el precio P2P; la franja, el rango entre compra y venta. La línea punteada es el TCO. Si el P2P se aleja del TCO por mucho tiempo, hay una diferencia que nadie está aprovechando.</p></details></div>
     <div class="card"><p class="cap">Tipo de cambio oficial (TCO) desde el inicio de la flotación, por fecha de corte.</p><div class="chart short" id="c-tco"></div></div>
   </section>
 
@@ -52,7 +53,8 @@
     <p class="intro">La base es la diferencia entre el dólar P2P y el oficial: <code>mid P2P ÷ TCO − 1</code>. Si los arbitrajistas pueden mover dinero entre ambos mercados, la base debería quedarse en una banda estrecha y volver rápido cuando se sale. Medimos qué tan rápido.</p>
     <div class="tiles small" id="tiles-basis"></div>
     <div class="grid2">
-      <div class="card"><p class="cap">Base P2P − TCO (%), cada 10 min. La franja es la banda de no arbitraje estimada.</p><div class="chart" id="c-basis"></div></div>
+      <div class="card"><p class="cap">Base P2P − TCO (%), cada 10 min. La franja es la banda de no arbitraje estimada.</p><div class="chart" id="c-basis"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Dentro de la franja, la diferencia es tan pequeña que no compensa los costos de mover dinero entre mercados. Fuera de ella, alguien debería ganar cerrándola. El porcentaje de tiempo fuera de la banda mide cuán eficiente es el mercado.</p></details></div>
       <div class="card"><p class="cap">Distribución de la base (% del tiempo).</p><div class="chart" id="c-hist"></div></div>
     </div>
   </section>
@@ -65,15 +67,18 @@
       <div class="card"><p class="cap">P2P: costo frente al mid por monto (%, mediana de las últimas 24 h).</p><div class="chart" id="c-size"></div></div>
       <div class="card"><p class="cap">Bancos: precio pagado frente al TCO según el tamaño de la operación (%, toda la muestra BCB).</p><div class="chart" id="c-tickets"></div></div>
     </div>
+    <details class="howto"><summary>Cómo leer</summary><p>Cada punto es el costo extra, frente al precio medio, de cambiar ese monto de una vez. Si la curva sube mucho con el monto, el mercado es poco profundo. En bancos, valores negativos indican que esas operaciones recibieron menos bolivianos por dólar que el TCO.</p></details>
   </section>
 
   <!-- 5. Liquidez -->
   <section id="liquidez" class="sec">
     <div class="sec-head"><span class="num">05</span><h2>Liquidez y fricciones</h2></div>
+    <p class="intro">Liquidez es la facilidad de cambiar montos grandes rápido y sin mover el precio. Aquí se mide cuánto dinero hay en oferta, los montos mínimos y máximos por anuncio y a qué horas el mercado es más caro.</p>
     <div class="tiles small" id="tiles-liq"></div>
     <div class="grid2">
       <div class="card"><p class="cap">USDT disponibles en anuncios P2P por lado (promedio de 10 min).</p><div class="chart" id="c-depth"></div></div>
-      <div class="card"><p class="cap">Spread mediano compra-venta (%) por hora y día, hora de Bolivia.</p><div class="chart" id="c-heat"></div></div>
+      <div class="card"><p class="cap">Spread mediano compra-venta (%) por hora y día, hora de Bolivia.</p><div class="chart" id="c-heat"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Cada casilla es una hora de un día de la semana. Los colores más intensos marcan las horas en que comprar o vender cuesta más.</p></details></div>
     </div>
   </section>
 
@@ -84,7 +89,8 @@
     <div class="tiles small" id="tiles-dyn"></div>
     <div class="grid2">
       <div class="card"><p class="cap">Volatilidad realizada diaria del P2P (%), con retornos de 10 min.</p><div class="chart short" id="c-rv"></div></div>
-      <div class="card"><p class="cap">Autocorrelación de los retornos de 10 min (rezagos 1 a 12). Las líneas marcan ±2/√n.</p><div class="chart short" id="c-acf"></div></div>
+      <div class="card"><p class="cap">Autocorrelación de los retornos de 10 min (rezagos 1 a 12). Las líneas marcan ±2/√n.</p><div class="chart short" id="c-acf"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Cada barra indica si una subida tiende a seguirse de otra subida (barra positiva) o de una bajada (negativa). Las barras dentro de las líneas punteadas no son significativas.</p></details></div>
     </div>
     <p class="note">Con más semanas de datos se agregan la participación en la información de Hasbrouck (qué mercado descubre el precio primero) y un precio eficiente estimado con filtro de Kalman.</p>
   </section>
@@ -92,6 +98,7 @@
   <!-- 7. Bancos -->
   <section id="bancos" class="sec">
     <div class="sec-head"><span class="num">07</span><h2>Mercado bancario (BCB)</h2></div>
+    <p class="intro">Datos de las compras de dólares que reportan los bancos al BCB. Muestran a qué precio se cambia en el sistema formal, cuánto varía ese precio dentro del mismo día y qué tan concentrado está el mercado.</p>
     <div class="tiles small" id="tiles-banks"></div>
     <div class="grid2">
       <div class="card"><p class="cap">Dispersión de precios dentro del día: percentiles 10 y 90 de las compras bancarias frente al TCO (%).</p><div class="chart" id="c-disp"></div></div>
@@ -108,7 +115,7 @@
         <h3>Fuentes</h3>
         <ul>
           <li><b>P2P:</b> libro completo de anuncios BOB/USDT de Binance P2P, ambos lados, cada minuto desde el 2 de octubre de 2026 (recolector propio).</li>
-          <li><b>TCO y compras bancarias:</b> archivos diarios del Banco Central de Bolivia, vía el repositorio público <a href="https://github.com/acamperob/bcb-tco">acamperob/bcb-tco</a>.</li>
+          <li><b>TCO y compras bancarias:</b> archivos diarios publicados por el Banco Central de Bolivia, descargados cada noche (23:50, hora de Bolivia) por un script propio.</li>
           <li><b>Próximamente:</b> otras plataformas P2P y casas de cambio.</li>
         </ul>
         <h3>Definiciones</h3>
@@ -127,6 +134,30 @@
         <p>El recolector, el exportador y esta página son abiertos: <a href="https://github.com/bvillag/observatorio-bobusd">github.com/bvillag/observatorio-bobusd</a>.</p>
         <h3>Limitaciones</h3>
         <p>USDT se toma como 1 USD. El P2P no es un mercado oficial y sus anuncios pueden no ejecutarse al precio publicado. Las estadísticas con pocas semanas de datos se marcan como preliminares.</p>
+      </div>
+    </div>
+
+    <div class="method gloss" id="glosario">
+      <h3>Glosario</h3>
+      <div>
+        <dl>
+          <dt>P2P</dt><dd>Mercado entre personas: compradores y vendedores publican anuncios en una plataforma (aquí, Binance) y se pagan directamente entre ellos.</dd>
+          <dt>USDT</dt><dd>Moneda digital que vale 1 dólar estadounidense. En el mercado P2P se usa como sustituto del dólar.</dd>
+          <dt>Mid P2P</dt><dd>Precio medio entre lo que piden los vendedores y lo que ofrecen los compradores de USDT en Binance P2P, para una operación de 1.000 USDT.</dd>
+          <dt>TCO</dt><dd>Tipo de cambio oficial que publica el BCB cada noche, calculado con las compras de dólares de los bancos del día anterior.</dd>
+          <dt>Fecha de corte</dt><dd>Día de las operaciones bancarias con que el BCB calcula un TCO; ese TCO rige desde el día siguiente.</dd>
+          <dt>Spread compra-venta</dt><dd>Diferencia entre el precio para comprar y el precio para vender. Es lo que pierde alguien que compra y vende al mismo tiempo; cuanto menor, más eficiente el mercado.</dd>
+        </dl>
+      </div>
+      <div>
+        <dl>
+          <dt>Base</dt><dd>Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.</dd>
+          <dt>Profundidad</dt><dd>Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1% respecto al mid.</dd>
+          <dt>Vida media</dt><dd>Tiempo que tarda en cerrarse la mitad de una diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los arbitrajistas.</dd>
+          <dt>Banda de no arbitraje</dt><dd>Rango de diferencias tan pequeñas que no compensan los costos de mover dinero entre mercados.</dd>
+          <dt>Razón de varianzas</dt><dd>Si vale cerca de 1, los movimientos del precio son impredecibles, como en un mercado líquido. Si es mayor a 1, el precio tiende a seguir en la misma dirección (inercia).</dd>
+          <dt>HHI</dt><dd>Índice de concentración: suma de los cuadrados de la participación de cada banco. Cerca de 0 = muchos bancos compitiendo; sobre 0,25 = pocos bancos dominan.</dd>
+        </dl>
       </div>
     </div>
   </section>

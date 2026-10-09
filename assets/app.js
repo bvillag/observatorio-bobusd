@@ -58,7 +58,21 @@
   }
   window.addEventListener('resize', () => Object.values(charts).forEach((c) => c.resize()));
 
-  const tile = (k, v, s = '') => `<div class="tile"><p class="k">${k}</p><p class="v">${v}</p>${s ? `<p class="s">${s}</p>` : ''}</div>`;
+  // explicaciones breves (icono ? junto al titulo de la tarjeta)
+  const HELP = {
+    'Mid P2P': 'Precio medio entre lo que piden los vendedores y lo que ofrecen los compradores de USDT en Binance P2P, para una operación de 1.000 USDT.',
+    'TCO vigente': 'Tipo de cambio oficial que publica el BCB cada noche, calculado con las compras de dólares de los bancos del día anterior.',
+    'Spread compra-venta': 'Diferencia entre el precio para comprar y el precio para vender. Es lo que pierde alguien que compra y vende al mismo tiempo; cuanto menor, más eficiente el mercado.',
+    'Profundidad a ±1%': 'Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1% respecto al mid.',
+    'Diferencia P2P vs TCO': 'Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.',
+    'Base media': 'Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.',
+    'Vida media AR(1)': 'Tiempo que tarda en cerrarse la mitad de una diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los arbitrajistas.',
+    'Razón de varianzas': 'Si vale cerca de 1, los movimientos del precio son impredecibles, como en un mercado líquido. Si es mayor a 1, el precio tiende a seguir en la misma dirección (inercia).',
+    'HHI promedio': 'Índice de concentración: suma de los cuadrados de la participación de cada banco. Cerca de 0 = muchos bancos compitiendo; sobre 0,25 = pocos bancos dominan.'
+  };
+  const helpFor = (k) => HELP[k] || (k.startsWith('Razón de varianzas') ? HELP['Razón de varianzas'] : '');
+  const q = (k) => { const h = helpFor(k); return h ? ` <span class="q" tabindex="0" role="note" aria-label="${h}" data-tip="${h}">?</span>` : ''; };
+  const tile = (k, v, s = '') => `<div class="tile"><p class="k">${k}${q(k)}</p><p class="v">${v}</p>${s ? `<p class="s">${s}</p>` : ''}</div>`;
   const narrow = () => window.innerWidth < 600;
   const timeAxis = { type: 'time', splitNumber: 5, axisLabel: { hideOverlap: true, formatter: (v) => tfmt(new Date(v).toISOString(), { day: '2-digit', month: 'short' }) } };
   const tipTime = (p) => tfmt(new Date(p[0].value[0]).toISOString(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -95,6 +109,14 @@
     return s.t.map((t, i) => (Date.parse(t) >= lim ? i : -1)).filter((i) => i >= 0);
   }
 
+  // rango del eje Y ajustado a los datos (con 10% de margen), redondeado a 0,01
+  function yRange(vals) {
+    const v = vals.filter((x) => x !== null && x !== undefined && !Number.isNaN(x));
+    if (!v.length) return {};
+    const lo = Math.min(...v), hi = Math.max(...v), pad = Math.max((hi - lo) * 0.1, 0.01);
+    return { min: Math.floor((lo - pad) * 100) / 100, max: Math.ceil((hi + pad) * 100) / 100 };
+  }
+
   function renderPrice() {
     const s1 = css('--s1'), s2 = css('--s2');
     if (D.p2p) {
@@ -103,7 +125,8 @@
       draw('c-price', {
         legend: { data: ['Mid P2P', 'TCO vigente', 'Banda compra-venta'] },
         tooltip: { formatter: (ps) => `${tipTime(ps)}<br>` + ps.filter((x) => x.seriesName !== '_lo').map((x) => `${x.marker}${x.seriesName === '_hi' ? 'Venta / compra' : x.seriesName}: ${x.seriesName === '_hi' ? f(s.ask[ix[x.dataIndex]], 3) + ' / ' + f(s.bid[ix[x.dataIndex]], 3) : f(x.value[1], 3)}`).join('<br>') },
-        xAxis: timeAxis, yAxis: { type: 'value' },
+        // la banda apilada hace que ECharts incluya el 0 en el eje; se fija el rango con los datos visibles
+        xAxis: timeAxis, yAxis: { type: 'value', scale: true, ...yRange(ix.flatMap((i) => [s.bid[i], s.ask[i], s.mid[i], s.tco[i]])) },
         series: [
           { name: '_lo', type: 'line', data: pt('bid'), stack: 'b', symbol: 'none', lineStyle: { opacity: 0 }, silent: true },
           { name: 'Banda compra-venta', type: 'line', data: ix.map((i) => [s.t[i], s.ask[i] - s.bid[i]]), stack: 'b', symbol: 'none', lineStyle: { opacity: 0 }, areaStyle: { color: css('--band') }, color: css('--band'), tooltip: { show: false } },
@@ -117,7 +140,7 @@
     draw('c-tco', {
       tooltip: { formatter: (ps) => `Corte ${ps[0].value[0]}<br>${ps[0].marker}TCO: ${f(ps[0].value[1], 2)}<br>Método: ${t.method[ps[0].dataIndex]}` },
       xAxis: { type: 'category', data: t.cutoff, axisLabel: { formatter: (v) => v.slice(5).replace('-', '/') } },
-      yAxis: { type: 'value' },
+      yAxis: { type: 'value', scale: true },
       series: [{ type: 'line', step: 'end', data: t.cutoff.map((d, i) => [d, t.tco[i]]), symbol: 'none', lineStyle: { width: 2, color: s2 }, color: s2,
         markLine: { symbol: 'none', silent: true, label: { formatter: 'RD 142', color: css('--text-3'), fontSize: 11 }, lineStyle: { color: css('--border-2'), type: 'dashed' }, data: [{ xAxis: '2026-09-25' }] } }]
     });
