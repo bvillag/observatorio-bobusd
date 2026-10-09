@@ -29,7 +29,7 @@ def sh(*cmd: str) -> str:
 
 
 def service(name: str) -> dict:
-    props = "ActiveState,SubState,ActiveEnterTimestamp,NRestarts,MemoryCurrent,Result"
+    props = "ActiveState,SubState,ActiveEnterTimestamp,NRestarts,MemoryCurrent,Result,MainPID"
     raw = sh("systemctl", "show", name, f"--property={props}")
     d = dict(line.split("=", 1) for line in raw.splitlines() if "=" in line)
     mem = d.get("MemoryCurrent", "")
@@ -40,7 +40,21 @@ def service(name: str) -> dict:
         "restarts": int(d["NRestarts"]) if d.get("NRestarts", "").isdigit() else None,
         "memory_mb": round(int(mem) / 2**20, 1) if mem.isdigit() else None,
         "result": d.get("Result"),
+        # memoria real del proceso (MemoryCurrent incluye la cache de disco de la BD SQLite)
+        "rss_mb": rss_mb(d.get("MainPID", "")),
     }
+
+
+def rss_mb(pid: str):
+    if not pid.isdigit() or pid == "0":
+        return None
+    try:
+        for line in Path(f"/proc/{pid}/status").read_text().splitlines():
+            if line.startswith("VmRSS:"):
+                return round(int(line.split()[1]) / 1024, 1)
+    except Exception:  # noqa: BLE001
+        return None
+    return None
 
 
 def db() -> dict:
