@@ -15,9 +15,9 @@
 <body>
 <header class="top">
   <div class="wrap top-in">
-    <a class="brand" href="#"><span class="dot"></span>Observatorio BOB/USD</a>
+    <a class="brand" href="#"><span class="dot"></span>Cotización BOB/USD</a>
     <nav class="nav">
-      <a href="#ahora">Ahora</a><a href="#spreads">Spreads</a><a href="#monto">Monto</a><a href="#liquidez">Liquidez</a><a href="#dinamica">Dinámica</a><a href="#bancos">Bancos</a><a href="#metodo">Método</a>
+      <a href="#ahora">Ahora</a><a href="#spreads">Diferencia</a><a href="#monto">Profundidad</a><a href="#liquidez">Liquidez</a><a href="#dinamica">Volatilidad</a><a href="#bancos">Bancos</a><a href="#metodo">Método</a>
     </nav>
     <button class="theme" id="theme" aria-label="Cambiar tema">Claro</button>
   </div>
@@ -25,9 +25,9 @@
 
 <main class="wrap">
   <section class="hero">
-    <p class="eyebrow"><span class="line"></span>Datos abiertos · actualización cada 10 minutos</p>
-    <h1>El precio del dólar, <span class="acc">visible para todos.</span></h1>
-    <p class="lede">El boliviano flota desde el 29 de junio de 2026, pero el precio del dólar cambia según dónde se compre: bancos, mercado P2P o casas de cambio. Esta página mide esas diferencias minuto a minuto para que cualquiera pueda verlas.</p>
+    <p class="eyebrow"><span class="line"></span>Datos abiertos · actualizados cada 10 minutos</p>
+    <h1>El mercado del dólar, <span class="acc">visible para todos.</span></h1>
+    <p class="lede">El boliviano flota desde el 29 de junio de 2026, pero el costo cambia según dónde se compre: bancos, plataformas USDT P2P, entre otros. Esta página mide esas diferencias minuto a minuto para que cualquiera pueda verlas.</p>
     <p class="status" id="status"><span class="pulse"></span><span id="status-text">Cargando datos…</span></p>
   </section>
 
@@ -40,71 +40,72 @@
   <!-- 2. Precio en el tiempo -->
   <section class="sec">
     <div class="sec-head"><span class="num">02</span><h2>El precio en el tiempo</h2>
-      <div class="seg" id="range"><button data-r="1">24 h</button><button data-r="7" class="on">7 días</button><button data-r="0">Todo</button></div>
+      <div class="seg" id="range"><button data-r="1">24 h</button><button data-r="7" class="on">7 días</button><button data-r="30">Mes</button></div>
     </div>
     <div class="card"><p class="cap">Mid P2P (Binance, BOB por USDT, promedio de 10 min) con la banda de compra y venta para 1.000 USDT, frente al TCO vigente.</p><div class="chart" id="c-price"></div>
-      <details class="howto"><summary>Cómo leer</summary><p>La línea central es el precio P2P; la franja, el rango entre compra y venta. La línea punteada es el TCO. Si el P2P se aleja del TCO por mucho tiempo, hay una diferencia que nadie está aprovechando.</p></details></div>
+      <details class="howto"><summary>Cómo leer</summary><p>La línea central verde es el precio del P2P; la franja, el rango entre compra y venta. La línea punteada naranja es el TCO publicado por el BCB.</p></details></div>
     <div class="card"><p class="cap">Tipo de cambio oficial (TCO) desde el inicio de la flotación, por fecha de corte.</p><div class="chart short" id="c-tco"></div></div>
   </section>
 
   <!-- 3. Spreads -->
   <section id="spreads" class="sec">
-    <div class="sec-head"><span class="num">03</span><h2>Spread entre mercados</h2><span class="badge" id="b-prelim-basis" hidden>Preliminar</span></div>
-    <p class="intro">La base es la diferencia entre el dólar P2P y el oficial: <code>mid P2P ÷ TCO − 1</code>. Si los arbitrajistas pueden mover dinero entre ambos mercados, la base debería quedarse en una banda estrecha y volver rápido cuando se sale. Medimos qué tan rápido.</p>
+    <div class="sec-head"><span class="num">03</span><h2>Diferencia entre mercados</h2><span class="badge" id="b-prelim-basis" hidden>Preliminar</span></div>
+    <p class="intro">La diferencia entre el dólar USDT y el oficial: <code>mid P2P ÷ TCO − 1</code>. Si la oferta y la demanda pueden moverse entre ambos mercados, la diferencia debería quedarse en una banda estrecha.</p>
     <div class="tiles small" id="tiles-basis"></div>
     <div class="grid2">
-      <div class="card"><p class="cap">Base P2P − TCO (%), cada 10 min. La franja es la banda de no arbitraje estimada.</p><div class="chart" id="c-basis"></div>
-        <details class="howto"><summary>Cómo leer</summary><p>Dentro de la franja, la diferencia es tan pequeña que no compensa los costos de mover dinero entre mercados. Fuera de ella, alguien debería ganar cerrándola. El porcentaje de tiempo fuera de la banda mide cuán eficiente es el mercado.</p></details></div>
-      <div class="card"><p class="cap">Distribución de la base (% del tiempo).</p><div class="chart" id="c-hist"></div></div>
+      <div class="card"><p class="cap">Diferencia P2P/TCO (%), cada 10 min. La franja es la banda de no arbitraje estimada.</p><div class="chart" id="c-basis"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>La línea verde es la diferencia entre el precio P2P y el TCO en cada momento. Sobre 0, el dólar P2P está más caro que el oficial; bajo 0, más barato. La línea horizontal marca el 0 y la franja naranja, la banda estimada. Los botones 24 h / 7 días / Mes de arriba cambian el periodo.</p></details></div>
+      <div class="card"><p class="cap">Distribución de la diferencia (% del tiempo).</p><div class="chart" id="c-hist"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Cada barra es un rango de diferencia (eje horizontal, en %). Su altura indica el porcentaje del tiempo en que la diferencia estuvo en ese rango. La barra más alta es la diferencia más frecuente.</p></details></div>
     </div>
   </section>
 
   <!-- 4. Monto -->
   <section id="monto" class="sec">
-    <div class="sec-head"><span class="num">04</span><h2>Costo según el monto</h2></div>
-    <p class="intro">Un mercado eficiente cobra casi lo mismo a quien cambia 100 que a quien cambia 100.000. Aquí, el costo de ejecutar cada monto contra el libro P2P y el descuento que reciben las operaciones bancarias según su tamaño.</p>
+    <div class="sec-head"><span class="num">04</span><h2>Profundidad del mercado</h2></div>
+    <p class="intro">La diferencia del costo para cambiar USD según el monto y el canal.</p>
     <div class="grid2">
-      <div class="card"><p class="cap">P2P: costo frente al mid por monto (%, mediana de las últimas 24 h).</p><div class="chart" id="c-size"></div></div>
-      <div class="card"><p class="cap">Bancos: precio pagado frente al TCO según el tamaño de la operación (%, toda la muestra BCB).</p><div class="chart" id="c-tickets"></div></div>
+      <div class="card"><p class="cap">P2P: costo por monto (%, mediana de las últimas 24 h).</p><div class="chart" id="c-size"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Cada punto es el costo extra, frente al precio medio, de cambiar ese monto de una vez. Si la curva sube mucho con el monto, el mercado es poco profundo.</p></details></div>
+      <div class="card"><p class="cap">Bancos: precio pagado frente al TCO según el tamaño de la operación (%, toda la muestra BCB).</p><div class="chart" id="c-tickets"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Valores negativos significan que, con esos montos, se reciben menos Bs por dólar que el TCO. Valores positivos indican que las operaciones de esos montos reciben más Bs por dólar que el TCO (poder de negociación).</p></details></div>
     </div>
-    <details class="howto"><summary>Cómo leer</summary><p>Cada punto es el costo extra, frente al precio medio, de cambiar ese monto de una vez. Si la curva sube mucho con el monto, el mercado es poco profundo. En bancos, valores negativos indican que esas operaciones recibieron menos bolivianos por dólar que el TCO.</p></details>
   </section>
 
   <!-- 5. Liquidez -->
   <section id="liquidez" class="sec">
-    <div class="sec-head"><span class="num">05</span><h2>Liquidez y fricciones</h2></div>
-    <p class="intro">Liquidez es la facilidad de cambiar montos grandes rápido y sin mover el precio. Aquí se mide cuánto dinero hay en oferta, los montos mínimos y máximos por anuncio y a qué horas el mercado es más caro.</p>
-    <div class="tiles small" id="tiles-liq"></div>
+    <div class="sec-head"><span class="num">05</span><h2>Liquidez del mercado P2P</h2></div>
+    <p class="intro">Liquidez es la facilidad de cambiar montos grandes rápido y sin mover el precio. Aquí se mide cuánto dinero hay en oferta por parte de los comerciantes, los montos mínimos y máximos por anuncio y a qué horas el mercado es más caro.</p>
+    <div class="tiles small three" id="tiles-liq"></div>
     <div class="grid2">
-      <div class="card"><p class="cap">USDT disponibles en anuncios P2P por lado (promedio de 10 min).</p><div class="chart" id="c-depth"></div></div>
+      <div class="card"><p class="cap">USDT disponibles en anuncios P2P por lado (promedio de 10 min).</p><div class="chart" id="c-depth"></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Los nombres siguen el punto de vista del comerciante que publica el anuncio. <b>Anuncios de venta:</b> comerciantes que venden USDT, es decir, lo que tú puedes comprar. <b>Anuncios de compra:</b> comerciantes que compran USDT, es decir, lo que tú puedes vender. Cada línea muestra cuántos USDT hay disponibles en ese lado.</p></details></div>
       <div class="card"><p class="cap">Spread mediano compra-venta (%) por hora y día, hora de Bolivia.</p><div class="chart" id="c-heat"></div>
-        <details class="howto"><summary>Cómo leer</summary><p>Cada casilla es una hora de un día de la semana. Los colores más intensos marcan las horas en que comprar o vender cuesta más.</p></details></div>
+        <details class="howto"><summary>Cómo leer</summary><p>Cada casilla es una hora de un día de la semana. Los colores más intensos marcan las horas en que comprar o vender cuesta más, usualmente en la madrugada o los fines de semana.</p></details></div>
     </div>
   </section>
 
   <!-- 6. Dinámica -->
   <section id="dinamica" class="sec">
-    <div class="sec-head"><span class="num">06</span><h2>Dinámica y estadística</h2><span class="badge" id="b-prelim-dyn" hidden>Preliminar</span></div>
-    <p class="intro">¿Se comporta el precio como un paseo aleatorio, como en un mercado líquido, o tiene inercia? La razón de varianzas de Lo y MacKinlay compara la varianza de los retornos largos con la suma de los cortos: 1 es paseo aleatorio, más de 1 indica tendencia.</p>
+    <div class="sec-head"><span class="num">06</span><h2>Volatilidad y tendencia</h2><span class="badge" id="b-prelim-dyn" hidden>Preliminar</span></div>
+    <p class="intro">¿Es el precio de mañana impredecible y aleatorio, o tiene tendencia en alguna dirección en el corto, mediano o largo plazo?</p>
     <div class="tiles small" id="tiles-dyn"></div>
     <div class="grid2">
       <div class="card"><p class="cap">Volatilidad realizada diaria del P2P (%), con retornos de 10 min.</p><div class="chart short" id="c-rv"></div></div>
       <div class="card"><p class="cap">Autocorrelación de los retornos de 10 min (rezagos 1 a 12). Las líneas marcan ±2/√n.</p><div class="chart short" id="c-acf"></div>
         <details class="howto"><summary>Cómo leer</summary><p>Cada barra indica si una subida tiende a seguirse de otra subida (barra positiva) o de una bajada (negativa). Las barras dentro de las líneas punteadas no son significativas.</p></details></div>
     </div>
-    <p class="note">Con más semanas de datos se agregan la participación en la información de Hasbrouck (qué mercado descubre el precio primero) y un precio eficiente estimado con filtro de Kalman.</p>
   </section>
 
   <!-- 7. Bancos -->
   <section id="bancos" class="sec">
-    <div class="sec-head"><span class="num">07</span><h2>Mercado bancario (BCB)</h2></div>
-    <p class="intro">Datos de las compras de dólares que reportan los bancos al BCB. Muestran a qué precio se cambia en el sistema formal, cuánto varía ese precio dentro del mismo día y qué tan concentrado está el mercado.</p>
-    <div class="tiles small" id="tiles-banks"></div>
-    <div class="grid2">
-      <div class="card"><p class="cap">Dispersión de precios dentro del día: percentiles 10 y 90 de las compras bancarias frente al TCO (%).</p><div class="chart" id="c-disp"></div></div>
-      <div class="card"><p class="cap">Participación en las compras de dólares, toda la muestra (%).</p><div class="chart" id="c-share"></div></div>
-    </div>
-    <div class="card"><p class="cap">Concentración diaria: índice Herfindahl-Hirschman (0 = competencia perfecta, 1 = un solo banco).</p><div class="chart short" id="c-hhi"></div></div>
+    <div class="sec-head"><span class="num">07</span><h2>Mercado bancario</h2></div>
+    <p class="intro">Datos de las compras de dólares que reportan los bancos al BCB. Muestran a qué precio se cambia en el sistema financiero, cuánto varía ese precio dentro del mismo día y qué tan concentrado está el mercado.</p>
+    <div class="tiles small three" id="tiles-banks"></div>
+    <div class="card"><p class="cap">Dispersión de precios dentro del día: percentiles 10 y 90 de las compras bancarias frente al TCO (%).</p><div class="chart" id="c-disp"></div>
+      <details class="howto"><summary>Cómo leer</summary><p>Cada día tiene dos puntos: la línea continua es el percentil 90 y la punteada el percentil 10 del precio de las compras bancarias frente al TCO. El 80% de las compras de ese día estuvo entre ambas líneas. Mientras más separadas, más distinto fue el precio según quién y cuánto cambió.</p></details></div>
+    <div class="card"><p class="cap">Concentración diaria: índice Herfindahl-Hirschman (0 = competencia perfecta, 1 = monopolio).</p><div class="chart short" id="c-hhi"></div>
+      <details class="howto"><summary>Cómo leer</summary><p>Cada punto es la concentración de las compras de dólares de ese día. Mientras más cerca de 1, menos bancos concentran el mercado. La línea punteada en 0,25 marca el umbral habitual de mercado muy concentrado.</p></details></div>
   </section>
 
   <!-- 8. Método -->
@@ -122,8 +123,8 @@
         <ul>
           <li><b>Mid P2P:</b> promedio entre el precio para comprar y para vender 1.000 USDT, respetando los montos mínimos y máximos de cada anuncio.</li>
           <li><b>TCO vigente:</b> el que rige ese día según la fecha de vigencia del BCB (RD 88/2026: promedio ponderado; RD 142/2026: mediana ponderada).</li>
-          <li><b>Banda de no arbitraje:</b> autorregresión con umbral (Balke y Fomby, 1997). Dentro de la banda la base no se corrige; fuera, sí. El umbral se elige por mínimos cuadrados.</li>
-          <li><b>Vida media:</b> <code>ln(0,5) / ln(φ)</code> de un AR(1) sobre la base.</li>
+          <li><b>Banda de no arbitraje:</b> autorregresión con umbral (Balke y Fomby, 1997). Dentro de la banda la diferencia no se corrige; fuera, sí. El umbral se elige por mínimos cuadrados.</li>
+          <li><b>Vida media:</b> <code>ln(0,5) / ln(φ)</code> de un AR(1) sobre la diferencia.</li>
           <li><b>Razón de varianzas:</b> Lo y MacKinlay (1988), con z robusto a heterocedasticidad.</li>
         </ul>
       </div>
@@ -146,16 +147,16 @@
           <dt>Mid P2P</dt><dd>Precio medio entre lo que piden los vendedores y lo que ofrecen los compradores de USDT en Binance P2P, para una operación de 1.000 USDT.</dd>
           <dt>TCO</dt><dd>Tipo de cambio oficial que publica el BCB cada noche, calculado con las compras de dólares de los bancos del día anterior.</dd>
           <dt>Fecha de corte</dt><dd>Día de las operaciones bancarias con que el BCB calcula un TCO; ese TCO rige desde el día siguiente.</dd>
-          <dt>Spread compra-venta</dt><dd>Diferencia entre el precio para comprar y el precio para vender. Es lo que pierde alguien que compra y vende al mismo tiempo; cuanto menor, más eficiente el mercado.</dd>
+          <dt>Spread compra-venta</dt><dd>Diferencia entre el precio para comprar y el precio para vender. Es el costo en que incurre alguien que quiere comprar o vender de inmediato; mientras más pequeño, más fácil es transaccionar.</dd>
         </dl>
       </div>
       <div>
         <dl>
-          <dt>Base</dt><dd>Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.</dd>
-          <dt>Profundidad</dt><dd>Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1% respecto al mid.</dd>
-          <dt>Vida media</dt><dd>Tiempo que tarda en cerrarse la mitad de una diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los arbitrajistas.</dd>
+          <dt>Diferencia P2P/TCO</dt><dd>Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.</dd>
+          <dt>Profundidad</dt><dd>Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1%.</dd>
+          <dt>Vida media</dt><dd>Tiempo que tarda en cerrarse la mitad de la diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los comerciantes.</dd>
           <dt>Banda de no arbitraje</dt><dd>Rango de diferencias tan pequeñas que no compensan los costos de mover dinero entre mercados.</dd>
-          <dt>Razón de varianzas</dt><dd>Si vale cerca de 1, los movimientos del precio son impredecibles, como en un mercado líquido. Si es mayor a 1, el precio tiende a seguir en la misma dirección (inercia).</dd>
+          <dt>Razón de varianzas</dt><dd>Si el valor está alrededor de 1, los movimientos son aleatorios e impredecibles. Si es mucho mayor a 1, el precio tiende a seguir moviéndose en la dirección actual.</dd>
           <dt>HHI</dt><dd>Índice de concentración: suma de los cuadrados de la participación de cada banco. Cerca de 0 = muchos bancos compitiendo; sobre 0,25 = pocos bancos dominan.</dd>
         </dl>
       </div>

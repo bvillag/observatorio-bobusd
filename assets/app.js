@@ -62,17 +62,17 @@
   const HELP = {
     'Mid P2P': 'Precio medio entre lo que piden los vendedores y lo que ofrecen los compradores de USDT en Binance P2P, para una operación de 1.000 USDT.',
     'TCO vigente': 'Tipo de cambio oficial que publica el BCB cada noche, calculado con las compras de dólares de los bancos del día anterior.',
-    'Spread compra-venta': 'Diferencia entre el precio para comprar y el precio para vender. Es lo que pierde alguien que compra y vende al mismo tiempo; cuanto menor, más eficiente el mercado.',
-    'Profundidad a ±1%': 'Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1% respecto al mid.',
+    'Spread compra-venta': 'Diferencia entre el precio para comprar y el precio para vender. Es el costo en que incurre alguien que quiere comprar o vender de inmediato; mientras más pequeño, más fácil es transaccionar.',
+    'Profundidad a ±1%': 'Cuántos USDT se pueden comprar o vender sin que el precio se mueva más de 1%.',
     'Diferencia P2P vs TCO': 'Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.',
-    'Base media': 'Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.',
-    'Vida media AR(1)': 'Tiempo que tarda en cerrarse la mitad de una diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los arbitrajistas.',
-    'Razón de varianzas': 'Si vale cerca de 1, los movimientos del precio son impredecibles, como en un mercado líquido. Si es mayor a 1, el precio tiende a seguir en la misma dirección (inercia).',
+    'Diferencia promedio': 'Cuánto más caro (+) o más barato (−) está el dólar P2P frente al oficial, en porcentaje.',
+    'Vida media AR(1)': 'Tiempo que tarda en cerrarse la mitad de la diferencia entre el P2P y el TCO. Mientras más corto, más rápido actúan los comerciantes.',
+    'Razón de varianzas': 'Si el valor está alrededor de 1, los movimientos son aleatorios e impredecibles. Si es mucho mayor a 1, el precio tiende a seguir moviéndose en la dirección actual.',
     'HHI promedio': 'Índice de concentración: suma de los cuadrados de la participación de cada banco. Cerca de 0 = muchos bancos compitiendo; sobre 0,25 = pocos bancos dominan.'
   };
   const helpFor = (k) => HELP[k] || (k.startsWith('Razón de varianzas') ? HELP['Razón de varianzas'] : '');
-  const q = (k) => { const h = helpFor(k); return h ? ` <span class="q" tabindex="0" role="note" aria-label="${h}" data-tip="${h}">?</span>` : ''; };
-  const tile = (k, v, s = '') => `<div class="tile"><p class="k">${k}${q(k)}</p><p class="v">${v}</p>${s ? `<p class="s">${s}</p>` : ''}</div>`;
+  const q = (k, hx) => { const h = hx || helpFor(k); return h ? ` <span class="q" tabindex="0" role="note" aria-label="${h}" data-tip="${h}">?</span>` : ''; };
+  const tile = (k, v, s = '', hx = '') => `<div class="tile"><p class="k">${k}${q(k, hx)}</p><p class="v">${v}</p>${s ? `<p class="s">${s}</p>` : ''}</div>`;
   const narrow = () => window.innerWidth < 600;
   const timeAxis = { type: 'time', splitNumber: 5, axisLabel: { hideOverlap: true, formatter: (v) => tfmt(new Date(v).toISOString(), { day: '2-digit', month: 'short' }) } };
   const tipTime = (p) => tfmt(new Date(p[0].value[0]).toISOString(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -153,17 +153,18 @@
     $('#b-prelim-basis').hidden = !b.preliminary;
     const hl = b.half_life_min;
     $('#tiles-basis').innerHTML =
-      tile('Base media', sg(b.mean, 2) + '%', `desvío ${f(b.sd, 2)} pp`) +
-      tile('Rango 90%', `${sg(b.p5, 2)} a ${sg(b.p95, 2)}%`, 'percentiles 5 y 95') +
+      tile('Diferencia promedio', sg(b.mean, 2) + '%', `desvío ${f(b.sd, 2)} pp`) +
+      tile('Rango 90%', `${sg(b.p5, 2)} a ${sg(b.p95, 2)}%`, 'percentiles 5 y 95', `El 90% del tiempo la diferencia está entre ${sg(b.p5, 2)}% y ${sg(b.p95, 2)}%.`) +
       tile('Vida media AR(1)', hl === null ? '—' : hl >= 120 ? f(hl / 60, 1) + ' h' : f(hl, 0) + ' min', `φ = ${f(b.ar1_phi, 3)} por 10 min`) +
-      tile('Fuera de la banda', tar ? f(tar.pct_outside, 0) + '%' : '—', tar ? `banda ±${f(tar.theta_pct, 2)} pp` : 'faltan datos');
+      tile('Fuera de la banda', tar ? f(tar.pct_outside, 0) + '%' : '—', tar ? `banda ±${f(tar.theta_pct, 2)} pp` : 'faltan datos',
+        tar ? `Porcentaje del tiempo en que la diferencia se aleja más de ${f(tar.theta_pct, 2)} pp de su nivel habitual (${sg(tar.center_pct, 2)}%). Fuera de esa banda, la diferencia es lo bastante grande como para que convenga cerrarla moviendo dinero entre mercados.` : '');
     const s = p.s10, ix = cut(s);
     const s1 = css('--s1');
     const marks = tar ? { silent: true, itemStyle: { color: css('--zone') }, data: [[{ yAxis: tar.center_pct - tar.theta_pct }, { yAxis: tar.center_pct + tar.theta_pct }]] } : undefined;
     draw('c-basis', {
-      tooltip: { formatter: (ps) => `${tipTime(ps)}<br>${ps[0].marker}Base: ${sg(ps[0].value[1], 2)}%` },
+      tooltip: { formatter: (ps) => `${tipTime(ps)}<br>${ps[0].marker}Diferencia: ${sg(ps[0].value[1], 2)}%` },
       xAxis: timeAxis, yAxis: { type: 'value', axisLabel: { formatter: (v) => f(v, 1) + '%' } },
-      series: [{ name: 'Base', type: 'line', data: ix.map((i) => [s.t[i], s.basis[i]]), symbol: 'none', lineStyle: { width: 1.6, color: s1 }, color: s1, markArea: marks,
+      series: [{ name: 'Diferencia', type: 'line', data: ix.map((i) => [s.t[i], s.basis[i]]), symbol: 'none', lineStyle: { width: 1.6, color: s1 }, color: s1, markArea: marks,
         markLine: { symbol: 'none', silent: true, lineStyle: { color: css('--border-2') }, label: { show: false }, data: [{ yAxis: 0 }] } }]
     });
     const e = b.hist_edges, tot = b.hist.reduce((a, c) => a + c, 0) || 1;
@@ -205,9 +206,8 @@
   function renderLiquidity() {
     const p = D.p2p;
     if (!p) { $('#tiles-liq').innerHTML = ''; empty('c-depth', 'Sin datos P2P todavía.'); empty('c-heat', 'Sin datos P2P todavía.'); return; }
-    const L = p.limits, n = p.now;
+    const L = p.limits;
     $('#tiles-liq').innerHTML =
-      tile('Anuncios activos', `${n.n_ask} / ${n.n_bid}`, 'venta / compra') +
       tile('Monto mínimo típico', f(L.min_bob_median.ask, 0) + ' Bs', 'mediana de anuncios, 24 h') +
       tile('Monto máximo típico', f(L.max_bob_median.ask, 0) + ' Bs', 'por operación') +
       tile('Comerciantes distintos', f(L.merchants_24h, 0), `cumplimiento mediano ${f(L.finish_rate_median, 0)}%`);
@@ -266,7 +266,6 @@
     $('#tiles-banks').innerHTML =
       tile('Días con datos', f(B.n_days, 0), `USD ${f(B.total_usd_m, 0)} millones comprados`) +
       tile('HHI promedio', f(B.hhi_mean, 2), '> 0,25 = muy concentrado') +
-      tile('3 bancos principales', f(B.top3_mean, 0) + '%', 'del monto diario, promedio') +
       tile('Dispersión típica', f(B.dispersion_median, 1) + ' pp', 'p90 − p10 dentro del día');
     const x = d.date.map((v) => v.slice(5).replace('-', '/'));
     draw('c-disp', {
@@ -278,14 +277,6 @@
         { name: 'Percentil 10', type: 'line', data: d.p10, symbol: 'none', lineStyle: { width: 2, color: s1, type: [6, 4] }, color: s1,
           markLine: { symbol: 'none', silent: true, label: { show: false }, lineStyle: { color: css('--border-2') }, data: [{ yAxis: 0 }] } }
       ]
-    });
-    const sh = [...B.share].reverse();
-    draw('c-share', {
-      tooltip: { trigger: 'item', formatter: (v) => `${v.name}: ${f(v.value, 1)}%` },
-      grid: { left: 8, right: 48, top: 8, bottom: 8, containLabel: true },
-      xAxis: { type: 'value', show: false, scale: false }, yAxis: { type: 'category', data: sh.map((b) => b.bank.replace('Banco ', '')), axisLabel: { fontFamily: 'Inter', color: css('--text-2') }, splitLine: { show: false } },
-      series: [{ type: 'bar', data: sh.map((b) => b.pct), barWidth: '56%', itemStyle: { color: s1, borderRadius: 3 },
-        label: { show: true, position: 'right', color: css('--text-2'), fontFamily: 'IBM Plex Mono', fontSize: 11, formatter: (v) => f(v.value, 1) + '%' } }]
     });
     draw('c-hhi', {
       tooltip: { valueFormatter: (v) => f(v, 3) },

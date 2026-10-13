@@ -52,6 +52,7 @@ h3{font-size:14px;font-weight:600;margin:18px 0 6px;color:var(--text)}
 .seg button.on{background:var(--acc-soft);color:var(--text)}
 .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px}
 .tiles.small{grid-template-columns:repeat(4,1fr)}
+.tiles.small.three{grid-template-columns:repeat(3,1fr)}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 14px}
 .tile .k{font-size:12.5px;color:var(--text-2);margin:0 0 8px}
 .tile .v{font:500 26px/1.1 var(--mono);letter-spacing:-.02em;margin:0;color:var(--text)}
@@ -78,5 +79,5 @@ h3{font-size:14px;font-weight:600;margin:18px 0 6px;color:var(--text)}
 .howto[open] summary::before{content:"−"}
 .howto p{margin:6px 0 4px;max-width:78ch}
 .gloss{margin-top:12px;row-gap:0}.gloss>h3{grid-column:1/-1;margin-bottom:0}.gloss dl{margin:0}.gloss dt{color:var(--text);font-weight:500;margin-top:10px}.gloss dd{margin:2px 0 0}
-@media (max-width:920px){.tiles{grid-template-columns:repeat(2,1fr)}.tiles.small{grid-template-columns:repeat(2,1fr)}.grid2,.method{grid-template-columns:1fr}.nav{display:none}.theme{margin-left:auto}}
+@media (max-width:920px){.tiles{grid-template-columns:repeat(2,1fr)}.tiles.small,.tiles.small.three{grid-template-columns:repeat(2,1fr)}.grid2,.method{grid-template-columns:1fr}.nav{display:none}.theme{margin-left:auto}}
 @media (max-width:480px){.wrap{padding:0 16px}.hero{padding-top:44px}.tile .v{font-size:22px}.chart{height:280px}.seg{margin-left:0}}
