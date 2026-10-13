@@ -157,7 +157,7 @@
       tile('Rango 90%', `${sg(b.p5, 2)} a ${sg(b.p95, 2)}%`, 'percentiles 5 y 95', `El 90% del tiempo la diferencia está entre ${sg(b.p5, 2)}% y ${sg(b.p95, 2)}%.`) +
       tile('Vida media AR(1)', hl === null ? '—' : hl >= 120 ? f(hl / 60, 1) + ' h' : f(hl, 0) + ' min', `φ = ${f(b.ar1_phi, 3)} por 10 min`) +
       tile('Fuera de la banda', tar ? f(tar.pct_outside, 0) + '%' : '—', tar ? `banda ±${f(tar.theta_pct, 2)} pp` : 'faltan datos',
-        tar ? `Porcentaje del tiempo en que la diferencia se aleja más de ${f(tar.theta_pct, 2)} pp de su nivel habitual (${sg(tar.center_pct, 2)}%). Fuera de esa banda, la diferencia es lo bastante grande como para que convenga cerrarla moviendo dinero entre mercados.` : '');
+        tar ? `Porcentaje del tiempo en que la diferencia se aleja más de ${f(tar.theta_pct, 2)} pp de su nivel habitual (${sg(tar.center_pct, 2)}%). Fuera de esa banda, la diferencia es lo bastante grande como para que a los comerciantes les convenga cerrarla moviendo dinero entre mercados.` : '');
     const s = p.s10, ix = cut(s);
     const s1 = css('--s1');
     const marks = tar ? { silent: true, itemStyle: { color: css('--zone') }, data: [[{ yAxis: tar.center_pct - tar.theta_pct }, { yAxis: tar.center_pct + tar.theta_pct }]] } : undefined;
@@ -286,17 +286,9 @@
     });
   }
 
-  function renderDownloads() {
-    const ul = $('#downloads');
-    const days = (D.csv_days || []).slice(-10).reverse();
-    ul.innerHTML = '<li><a href="data/obs.json">obs.json</a> (todo lo que dibuja la página)</li><li><a href="data/csv/tco.csv">tco.csv</a> (serie del TCO)</li>' +
-      days.map((d) => `<li><a href="data/csv/p2p_${d}.csv">p2p_${d}.csv</a></li>`).join('') +
-      (D.csv_days && D.csv_days.length > 10 ? '<li>Días anteriores: en la carpeta <a href="https://github.com/bvillag/observatorio-bobusd/tree/main/data/csv">data/csv</a></li>' : '');
-  }
-
   function renderAll() {
     if (!D) return;
-    renderStatus(); renderNow(); renderPrice(); renderBasis(); renderSize(); renderLiquidity(); renderDynamics(); renderBanks(); renderDownloads();
+    renderStatus(); renderNow(); renderPrice(); renderBasis(); renderSize(); renderLiquidity(); renderDynamics(); renderBanks();
   }
 
   document.querySelectorAll('#range button').forEach((b) => b.addEventListener('click', () => {

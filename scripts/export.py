@@ -6,6 +6,7 @@ acamperob/bcb-tco), calcula las estadisticas de la pagina y escribe:
     data/obs.json                 todo lo que dibuja la pagina
     data/csv/p2p_YYYY-MM-DD.csv   precios P2P por minuto (un archivo por dia)
     data/csv/tco.csv              serie del TCO
+    data/csv/p2p.csv              serie P2P completa cada 10 min (la que dibuja la pagina)
 
 Uso:
     python export.py --db /var/lib/bobusd/p2p_bob_usdt.sqlite \
@@ -234,7 +235,7 @@ def variance_ratio(logp: np.ndarray, q: int):
     return vr, z
 
 
-def p2p_block(con, tco_by_day: pd.Series) -> dict | None:
+def p2p_block(con, tco_by_day: pd.Series, out: Path | None = None) -> dict | None:
     rates = load_rates(con)
     rates = rates[rates.mid.notna()]
     if rates.empty:
@@ -247,6 +248,15 @@ def p2p_block(con, tco_by_day: pd.Series) -> dict | None:
     local_day = b10.index.tz_convert(BOT).date
     b10["tco"] = [tco_by_day.get(d, np.nan) for d in local_day]
     b10["basis"] = (b10.mid / b10.tco - 1) * 100
+    if out is not None:
+        (out / "csv").mkdir(parents=True, exist_ok=True)
+        cols = {"mid": "mid_p2p", "ask_vwap": "precio_comprar_1000usdt", "bid_vwap": "precio_vender_1000usdt",
+                "spread_pct": "spread_pct", "depth_ask_usdt": "usdt_anuncios_venta", "depth_bid_usdt": "usdt_anuncios_compra",
+                "tco": "tco_vigente", "basis": "diferencia_pct"}
+        x = b10[list(cols)].rename(columns=cols)
+        x.index = x.index.tz_convert("UTC").strftime("%Y-%m-%dT%H:%MZ")
+        x.index.name = "fecha_hora_utc"
+        x.to_csv(out / "csv" / "p2p.csv", float_format="%.4f")
 
     # --- libro actual y curva de costo por monto
     last_ads = pd.read_sql("SELECT * FROM ads WHERE ts = ?", con, params=(rates.index[-1].strftime("%Y-%m-%dT%H:%M:%S+00:00"),))
@@ -374,7 +384,7 @@ def main():
                 "tco": rl(tot.tco, 2), "method": tot.metodo.tolist(),
                 "usd_m": rl(tot.monto_usd / 1e6, 2)},
         "banks": banks_block(tot, op),
-        "p2p": p2p_block(con, tco_by_day),
+        "p2p": p2p_block(con, tco_by_day, out),
         "csv_days": p2p_days,
     }
     tco_lp = np.log(tot.tco.values)
