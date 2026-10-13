@@ -23,6 +23,6 @@ Página pública que mide el precio del dólar en Bolivia y las diferencias (spr
 
 `data/obs.json` (todo lo que dibuja la página), `data/csv/tco.csv` y `data/csv/p2p_AAAA-MM-DD.csv` (precios P2P por minuto). Horas en UTC.
 
-## Autor
+## Acerca de
 
-Bruno Villagomez Caro. Proyecto de investigación sobre la formación del tipo de cambio en Bolivia.
+Proyecto de investigación sobre la formación del tipo de cambio en Bolivia.
