@@ -1,12 +1,12 @@
 {
- "generated": "2026-10-30T14:12:42Z",
+ "generated": "2026-10-30T14:32:46Z",
  "services": {
   "bobusd-collector": {
    "active": "active",
    "sub": "running",
    "since": "Sat 2026-10-24 06:01:51 UTC",
    "restarts": 0,
-   "memory_mb": 447.3,
+   "memory_mb": 448.3,
    "result": "success",
    "rss_mb": 36.9
   },
@@ -22,22 +22,22 @@
  },
  "db": {
   "exists": true,
-  "size_mb": 1817.0,
-  "rows": 40198,
-  "last_ts": "2026-10-30T14:11:53+00:00"
+  "size_mb": 1817.9,
+  "rows": 40218,
+  "last_ts": "2026-10-30T14:31:53+00:00"
  },
  "disk": {
   "free_gb": 86.4,
   "used_pct": 9.8
  },
- "uptime_h": 313.2,
+ "uptime_h": 313.5,
  "load": [
-  0.01,
-  0.01,
+  0.0,
+  0.0,
   0.0
  ],
  "reboot_required": false,
- "last_publish_error": null,
+ "last_publish_error": "2026-10-30T14:22:42Z linea 26: git fetch -q origin\n",
  "collector_deploy": true,
- "ts_unix": 1793369562
+ "ts_unix": 1793370766
 }
