@@ -1,14 +1,14 @@
 {
- "generated": "2026-11-06T21:35:41Z",
+ "generated": "2026-11-06T21:45:43Z",
  "services": {
   "bobusd-collector": {
    "active": "active",
    "sub": "running",
    "since": "Sat 2026-10-24 06:01:51 UTC",
    "restarts": 0,
-   "memory_mb": 943.0,
+   "memory_mb": 943.6,
    "result": "success",
-   "rss_mb": 37.0
+   "rss_mb": 37.1
   },
   "bobusd-publish.timer": {
    "active": "active",
@@ -22,22 +22,22 @@
  },
  "db": {
   "exists": true,
-  "size_mb": 2298.3,
-  "rows": 50721,
-  "last_ts": "2026-11-06T21:34:55+00:00"
+  "size_mb": 2298.8,
+  "rows": 50731,
+  "last_ts": "2026-11-06T21:44:55+00:00"
  },
  "disk": {
   "free_gb": 86.0,
   "used_pct": 10.3
  },
- "uptime_h": 488.5,
+ "uptime_h": 488.7,
  "load": [
-  0.17,
-  0.04,
-  0.01
+  0.01,
+  0.01,
+  0.0
  ],
  "reboot_required": false,
  "last_publish_error": null,
  "collector_deploy": true,
- "ts_unix": 1794000941
+ "ts_unix": 1794001543
 }
